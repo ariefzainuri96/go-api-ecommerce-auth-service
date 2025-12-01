@@ -16,7 +16,7 @@
 2. Create migration file:
    migrate create -seq -ext sql -dir ././cmd/migrate/migrations create_users
 3. Perform migration:
-   migrate -path ./cmd/migrate/migrations -database="postgres://postgres:postgres@localhost:5432/go-ecommerce-db?sslmode=disable" up
+   migrate -path ./cmd/migrate/migrations -database="postgres://postgres:postgres@localhost:5432/go_api_ecommerce_auth_service?sslmode=disable&connect_timeout=15" up
 
 ## Docker
 

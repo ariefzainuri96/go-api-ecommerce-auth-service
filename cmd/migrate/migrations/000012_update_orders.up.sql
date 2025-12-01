@@ -1,8 +1,0 @@
-ALTER TABLE orders
-ADD COLUMN product_id BIGINT,
-ADD CONSTRAINT fk_product
-FOREIGN KEY (product_id) REFERENCES products(id)
-ON DELETE CASCADE;
-
-ALTER TABLE orders
-ADD COLUMN quantity INT;
