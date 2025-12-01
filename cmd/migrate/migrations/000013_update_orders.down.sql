@@ -1,0 +1,8 @@
+ALTER TABLE orders
+DROP COLUMN IF EXISTS invoice_id;
+
+ALTER TABLE orders
+DROP COLUMN IF EXISTS invoice_url;
+
+ALTER TABLE orders
+DROP COLUMN IF EXISTS invoice_exp_date;

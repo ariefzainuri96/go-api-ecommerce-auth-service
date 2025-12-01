@@ -1,0 +1,32 @@
+services:
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: api-sql-course
+        ports:
+            - '8080:8080'
+        depends_on:
+            - db
+        env_file:
+            - .env
+        volumes:
+            - ./:/app
+        restart: always
+
+    db:
+        image: postgres:16.3
+        container_name: ecommerce-db
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: Rohanwebid96dong
+            POSTGRES_DB: ecommerce-db
+        ports:
+            # 5433 is for host / local machine
+            # 5432 is for container
+            - 5433:5432
+        volumes:
+            - db-data:/var/lib/postgresql/data
+
+volumes:
+    db-data:

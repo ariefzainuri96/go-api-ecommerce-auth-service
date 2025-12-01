@@ -1,0 +1,5 @@
+ALTER TABLE orders
+DROP COLUMN IF EXISTS product_id;
+
+ALTER TABLE orders
+DROP COLUMN IF EXISTS quantity;
