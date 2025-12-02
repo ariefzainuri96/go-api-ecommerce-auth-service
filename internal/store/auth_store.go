@@ -72,7 +72,7 @@ func generateToken(email string, isAdmin bool, id int) (string, error) {
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func (store *AuthStore) Register(ctx context.Context, body *authpb.RegisterRequest) error {
+func (store *AuthStore) Register(ctx context.Context, body *authpb.RegisterRequest) (uint, error) {
 	var emailExists bool
 
 	user := entity.User{
@@ -86,15 +86,15 @@ func (store *AuthStore) Register(ctx context.Context, body *authpb.RegisterReque
 		Scan(&emailExists).Error
 
 	if err != nil {
-		return err
+		return 0, err
 	} else if emailExists {
-		return fmt.Errorf("email sudah terdaftar")
+		return 0, fmt.Errorf("email sudah terdaftar")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(body.Password), bcrypt.DefaultCost)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	user.Name = body.FullName
@@ -108,8 +108,8 @@ func (store *AuthStore) Register(ctx context.Context, body *authpb.RegisterReque
 	// result, err := store.db.ExecContext(ctx, query, body.Name, body.Email, string(hashedPassword))
 
 	if result.Error != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return user.ID, nil
 }

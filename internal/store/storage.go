@@ -12,7 +12,7 @@ import (
 type Storage struct {
 	IAuth interface {
 		Login(context.Context, *authpb.LoginRequest) (entity.User, string, error)
-		Register(context.Context, *authpb.RegisterRequest) error
+		Register(context.Context, *authpb.RegisterRequest) (uint, error)
 	}
 }
 

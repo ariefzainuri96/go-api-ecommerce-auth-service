@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/ariefzainuri96/go-api-ecommerce-auth-service/internal/db"
+	"github.com/ariefzainuri96/go-api-ecommerce-auth-service/internal/logger"
 	"github.com/ariefzainuri96/go-api-ecommerce-auth-service/internal/server"
 	"github.com/ariefzainuri96/go-api-ecommerce-auth-service/internal/store"
 	"github.com/joho/godotenv"
@@ -44,7 +45,10 @@ func main() {
 
 	store := store.NewStorage(db, gormDb)
 
-	if err := s.Start(store); err != nil {
+	logger := logger.NewLogger()
+	defer logger.Sync()
+
+	if err := s.Start(store, logger); err != nil {
 		log.Fatal(err)
 	}
 }

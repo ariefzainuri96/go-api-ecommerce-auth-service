@@ -1,10 +1,14 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 	"reflect"
+
+	"github.com/ariefzainuri96/go-api-ecommerce-auth-service/internal/interceptor"
+	"go.uber.org/zap"
 )
 
 func UpdateStruct(existing interface{}, updates interface{}) {
@@ -55,6 +59,15 @@ func MapSlice[T any, R any](source []T, transformer func(T) R) []R {
 	}
 
 	return result
+}
+
+func LogMethod[T any](logger *zap.Logger, ctx context.Context, req T) {
+	cid, _ := ctx.Value(interceptor.CidKey{}).(string)
+
+	logger.Info("Login called",
+		zap.String("cid", cid),
+		zap.Any("request", req),
+	)
 }
 
 // LoadJsonData loads JSON data from a file into the provided destination.

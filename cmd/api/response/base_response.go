@@ -2,7 +2,6 @@ package response
 
 import "encoding/json"
 
-// @Model
 type BaseResponse struct {
 	Status  int64  `json:"status"`
 	Message string `json:"message"`
