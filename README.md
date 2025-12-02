@@ -1,3 +1,7 @@
+## gRPC
+
+1. After edit .proto file, you can re-generate the protoc file using this command `protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative proto/auth.proto`
+
 ## air-verse for hot reload
 
 1. <https://github.com/air-verse/air>

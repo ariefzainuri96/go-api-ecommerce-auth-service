@@ -35,12 +35,6 @@ func main() {
 
 	defer db.Close()
 
-	envHost := os.Getenv("SWAGGER_HOST")
-
-	if envHost == "" {
-		envHost = "localhost:8080"
-	}
-
 	s := server.NewGRPCServer(50051)
 
 	store := store.NewStorage(db, gormDb)
