@@ -33,21 +33,10 @@ func NewGorm(addr string) (*gorm.DB, error) {
 
 	err = db.WithContext(ctx).Error
 
-	// Optional: AutoMigrate creates/updates table based on the struct definition
-	// This is a powerful feature but use with caution in production.
-	// It's very useful for development.
-	// err = db.WithContext(ctx).AutoMigrate(
-	// 	&entity.Product{},
-	// 	&entity.Cart{},
-	// 	// &entity.User{},
-	// )
-
 	if err != nil {
-		log.Fatalf("Failed to perform auto migration: %v", err)
+		log.Fatalf("Failed to perform set timeout: %v", err)
 		return nil, err
 	}
-
-	log.Println("Database migration completed successfully.")
 
 	return db, nil
 }

@@ -11,22 +11,7 @@
 
 1. Head to migrate github `https://github.com/golang-migrate/migrate/tree/master/cmd/migrate` -> this link contains cli installation
 2. Create migration file:
-   migrate create -seq -ext sql -dir ././cmd/migrate/migrations create_users
-3. Perform migration:
-   migrate -path ./cmd/migrate/migrations -database="postgres://postgres:postgres@localhost:5432/go_api_ecommerce_auth_service?sslmode=disable&connect_timeout=15" up
-
-## Docker
-
-1. running docker container that we specify in docker-compose.yml:
-   docker compose up -d
-
-2. stop docker container:
-   docker compose down
-
-3. remove docker container with its volumes:
-   docker compose down -v
-
-4. if you encounter failed to connect to db, try to stop docker compose and run again, its because the database is not yet created
+   migrate create -seq -ext sql -dir ././migrations create_users
 
 ## .air.toml
 

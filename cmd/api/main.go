@@ -12,12 +12,14 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatal("Error loading .env file")
-		return
+	if os.Getenv("APP_ENV") != "production" {
+		if err := godotenv.Load(); err != nil {
+			log.Fatal("Error loading .env file")
+			return
+		}
 	}
+
+	db.RunMigrations()
 
 	gormDb, errGorm := db.NewGorm(os.Getenv("DB_ADDR"))
 

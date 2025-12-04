@@ -1,17 +1,32 @@
-FROM golang:alpine AS builder
+# ============================
+# 1 — Build Stage
+# ============================
+FROM golang:1.24 AS builder
 
 WORKDIR /app
 
-RUN go install github.com/air-verse/air@latest
-
-COPY go.* ./
-
+# Cache modules first
+COPY go.mod go.sum ./
 RUN go mod download
 
+# Copy the entire source code
 COPY . .
 
-RUN go build -o ./bin/ ./cmd/api/
+# Build binary
+RUN CGO_ENABLED=0 GOOS=linux go build -o auth-service ./cmd/api
 
-EXPOSE 8080
+# ============================
+# 2 — Runtime Stage
+# ============================
+FROM alpine:latest
 
-CMD [ "air", "-c", ".air.toml" ]
+WORKDIR /app
+
+# Copy binary from builder
+COPY --from=builder /app/auth-service .
+
+# Expose the port your service uses
+EXPOSE 50051
+
+# Run the application
+CMD ["./auth-service"]
