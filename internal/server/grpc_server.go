@@ -11,6 +11,8 @@ import (
 	authpb "github.com/ariefzainuri96/go-api-ecommerce-auth-service/proto"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+    "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type GRPCServer struct {
@@ -25,6 +27,7 @@ func NewGRPCServer(port int) *GRPCServer {
 
 func (s *GRPCServer) Start(store store.Storage, logger *zap.Logger) error {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", s.port))
+
 	if err != nil {
 		return fmt.Errorf("failed to listen: %w", err)
 	}
@@ -34,10 +37,15 @@ func (s *GRPCServer) Start(store store.Storage, logger *zap.Logger) error {
 			interceptor.CorrelationIDInterceptor(logger),
 			interceptor.LoggingInterceptor(logger),
 		),
-	)	
+	)
 
 	// register service implementation
 	authpb.RegisterAuthServiceServer(grpcServer, service.NewAuthService(store, logger))
+
+	// Register health server
+	healthServer := health.NewServer()
+	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
+	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 
 	log.Printf("gRPC Auth Service running on port %d", s.port)
 

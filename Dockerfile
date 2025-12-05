@@ -25,6 +25,9 @@ WORKDIR /app
 # Copy binary from builder
 COPY --from=builder /app/auth-service .
 
+# Copy migrations folder (this was missing)
+COPY --from=builder /app/migrations ./migrations
+
 # Expose the port your service uses
 EXPOSE 50051
 

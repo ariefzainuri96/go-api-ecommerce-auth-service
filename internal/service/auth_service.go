@@ -30,7 +30,7 @@ func (s *AuthServiceImpl) Register(ctx context.Context, req *authpb.RegisterRequ
 	}
 
 	return &authpb.RegisterResponse{
-		UserId: int64(id), // fake ID for now
+		UserId: int64(id),
 	}, nil
 }
 
