@@ -11,7 +11,18 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewGorm(addr string) (*gorm.DB, error) {
+type GormDB struct {
+	gormDb *gorm.DB
+}
+
+func (d *GormDB) ExecWithTimeout(ctx context.Context, fn func(tx *gorm.DB) error) error {
+    ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+    defer cancel()
+
+    return fn(d.gormDb.WithContext(ctx))
+}
+
+func NewGorm(addr string) (*GormDB, error) {
 	// Use your existing DSN (Data Source Name) / connection string
 	// Example DSN: "host=localhost user=user password=pass dbname=ecommerce-db port=5432 sslmode=disable"
 
@@ -19,26 +30,14 @@ func NewGorm(addr string) (*gorm.DB, error) {
 
 	if err != nil {
 		log.Fatalf("Failed to connect to the database with GORM: %v", err)
-		return nil, err
+		return &GormDB{}, err
 	}
 
 	log.Println("Database connection successfully established with GORM.")
 
-	// --- Step 2: Create a Context for Startup Operations ---
-
-	// Set a timeout for the AutoMigrate operation itself (e.g., 30 seconds)
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-
-	defer cancel()
-
-	err = db.WithContext(ctx).Error
-
-	if err != nil {
-		log.Fatalf("Failed to perform set timeout: %v", err)
-		return nil, err
-	}
-
-	return db, nil
+	return &GormDB{
+		gormDb: db,
+	}, nil
 }
 
 func New(addr string, maxOpenCons, maxIdleConns int, maxIdleTime string) (*sql.DB, error) {

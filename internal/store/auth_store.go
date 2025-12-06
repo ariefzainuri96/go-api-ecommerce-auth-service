@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/ariefzainuri96/go-api-ecommerce-auth-service/cmd/api/entity"
+	db "github.com/ariefzainuri96/go-api-ecommerce-auth-service/internal/db"
 	authpb "github.com/ariefzainuri96/go-api-ecommerce-auth-service/proto"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -18,7 +19,7 @@ import (
 
 type AuthStore struct {
 	db     *sql.DB
-	gormDb *gorm.DB
+	gormDb *db.GormDB
 }
 
 func (store *AuthStore) Login(ctx context.Context, body *authpb.LoginRequest) (entity.User, string, error) {
@@ -26,22 +27,16 @@ func (store *AuthStore) Login(ctx context.Context, body *authpb.LoginRequest) (e
 		Email: body.Email,
 	}
 
-	err := store.gormDb.
-		WithContext(ctx).
+	err := store.gormDb.ExecWithTimeout(ctx, func(tx *gorm.DB) error {
 		// get data by condition from user instance, which is by email
-		Where(user).
-		// insert data to [user] address
-		First(&user).Error
+		return tx.Where(user).
+			// insert data to [user] address
+			First(&user).Error
+	})
 
 	if err != nil {
 		return user, "", err
 	}
-
-	// query := `SELECT id, name, email, password, is_admin FROM users WHERE email = $1;`
-
-	// row := store.db.QueryRowContext(ctx, query, body.Email)
-
-	// err := row.Scan(&login.ID, &login.Name, &login.Email, &password, &isAdmin)
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password))
 
@@ -79,11 +74,9 @@ func (store *AuthStore) Register(ctx context.Context, body *authpb.RegisterReque
 		Email: body.Email,
 	}
 
-	err := store.gormDb.
-		WithContext(ctx).
-		Model(&user).
-		Where(user).
-		Scan(&emailExists).Error
+	err := store.gormDb.ExecWithTimeout(ctx, func(tx *gorm.DB) error {
+		return tx.Model(&user).Where(user).Scan(&emailExists).Error
+	})
 
 	if err != nil {
 		return 0, err
@@ -101,13 +94,11 @@ func (store *AuthStore) Register(ctx context.Context, body *authpb.RegisterReque
 	user.Password = string(hashedPassword)
 	user.IsAdmin = false
 
-	result := store.gormDb.WithContext(ctx).Create(&user)
+	err = store.gormDb.ExecWithTimeout(ctx, func(tx *gorm.DB) error {
+		return tx.Create(&user).Error
+	})
 
-	// query := `INSERT INTO users (name, email, password) VALUES ($1, $2, $3)`
-
-	// result, err := store.db.ExecContext(ctx, query, body.Name, body.Email, string(hashedPassword))
-
-	if result.Error != nil {
+	if err != nil {
 		return 0, err
 	}
 

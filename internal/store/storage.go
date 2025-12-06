@@ -5,8 +5,8 @@ import (
 	"database/sql"
 
 	"github.com/ariefzainuri96/go-api-ecommerce-auth-service/cmd/api/entity"
+	db "github.com/ariefzainuri96/go-api-ecommerce-auth-service/internal/db"
 	authpb "github.com/ariefzainuri96/go-api-ecommerce-auth-service/proto"
-	"gorm.io/gorm"
 )
 
 type Storage struct {
@@ -16,8 +16,8 @@ type Storage struct {
 	}
 }
 
-func NewStorage(db *sql.DB, gormDb *gorm.DB) Storage {
+func NewStorage(db *sql.DB, gorm *db.GormDB) Storage {
 	return Storage{
-		IAuth: &AuthStore{db, gormDb},
+		IAuth: &AuthStore{db, gorm},
 	}
 }
